@@ -1,5 +1,6 @@
 package com.techcrunch.repository
 
+import com.google.gson.Gson
 import com.techcrunch.model.DataPosts
 import com.techcrunch.network.ApiService
 import io.reactivex.Single
@@ -16,9 +17,10 @@ class DataPostRepositoryImpl @Inject constructor(private val apiService: ApiServ
             .flatMap {
                 if (it.isSuccessful) {
                     Single.just(it.body())
-                } else {
-                   TODO()
-                    }
+                }
+                else {
+                    Single.error<List<DataPosts>>(RuntimeException())
                 }
             }
+    }
     }

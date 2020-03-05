@@ -1,11 +1,11 @@
 package com.techcrunch.di
 
-import com.techcrunch.ui.PostsActivity
+import com.techcrunch.di.actitivty.ActivityComponent
+import com.techcrunch.di.actitivty.ActivityModule
 import dagger.Component
-import javax.inject.Singleton
 
-@Singleton
+@AppScope
 @Component(modules = [AppModule::class])
 interface AppComponent {
-    fun inject(activity: PostsActivity)
+    fun inject(activity: ActivityModule): ActivityComponent
 }

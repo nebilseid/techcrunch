@@ -4,11 +4,11 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.techcrunch.App
 import com.techcrunch.R
-import com.techcrunch.di.AppModule
-import com.techcrunch.di.DaggerAppComponent
+import com.techcrunch.di.actitivty.ActivityComponent
+import com.techcrunch.di.actitivty.ActivityModule
 import com.techcrunch.viewmodel.PostsViewModel
 import com.techcrunch.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_post.*
@@ -17,37 +17,42 @@ import javax.inject.Inject
 class PostsActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var viewModelFactory: ViewModelFactory
+    lateinit var activityComponent: ActivityComponent
+
     @Inject
-    lateinit var postsViewModel: PostsViewModel
+    lateinit var viewModelFactory: ViewModelFactory
+    private lateinit var viewModel: PostsViewModel
+
 
     private val postAdapter = PostAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post)
-
-        DaggerAppComponent.builder()
-            .appModule(AppModule())
-            .build()
-            .inject(this)
-
-
-        rv_post.layoutManager = LinearLayoutManager(this)
-        rv_post.adapter = postAdapter
-
-        posts()
+        injectDependecy()
+        initializeView()
+        getPosts()
     }
 
-    private fun posts() {
-        postsViewModel =
-            ViewModelProvider(this, viewModelFactory).get(postsViewModel::class.java)
-        postsViewModel.getPosts()
-
-
-        postsViewModel.roadLiveData.observe(this, Observer {
+    fun getPosts() {
+        viewModel = ViewModelProvider(this, viewModelFactory).get(PostsViewModel::class.java)
+        viewModel.getPosts()
+        viewModel.postViewmodel.observe(this, Observer {
             postAdapter.setData(it)
         })
+    }
+
+    fun initializeView() {
+        val layoutManager = LinearLayoutManager(this)
+        rv_post.layoutManager = layoutManager
+        rv_post.adapter = postAdapter
+    }
+
+    fun injectDependecy() {
+        activityComponent =
+            (this.application as App).appComponent.inject(ActivityModule())
+        activityComponent.inject(this)
+
     }
 }
 
