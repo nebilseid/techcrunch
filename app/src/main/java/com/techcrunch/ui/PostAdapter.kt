@@ -1,5 +1,7 @@
 package com.techcrunch.ui
 
+import android.os.Build
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,19 +22,32 @@ class PostAdapter : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        PostViewHolder (LayoutInflater.from(parent.context).inflate(R.layout.item_post, parent, false))
+        PostViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.item_post,
+                parent,
+                false
+            )
+        )
 
-    override fun getItemCount() =  data.size
+    override fun getItemCount() = data.size
 
     override fun onBindViewHolder(viewHolder: PostViewHolder, position: Int) {
-            viewHolder.bind(data[position])
+        viewHolder.bind(data[position])
 
-        }
+    }
 
     class PostViewHolder(var view: View) : RecyclerView.ViewHolder(view) {
         fun bind(response: DataPosts) {
-            view.tv_post_title.text = response.title?.rendered
-            view.tv_excerpt.text = response.excerpt?.rendered
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                view.tv_post_title.text =
+                    Html.fromHtml(response.title?.rendered, Html.FROM_HTML_MODE_LEGACY)
+                view.tv_excerpt.text =
+                    Html.fromHtml(response.excerpt?.rendered, Html.FROM_HTML_MODE_LEGACY)
+            } else {
+                view.tv_post_title.text = response.title?.rendered
+                view.tv_excerpt.text = response.excerpt?.rendered
+            }
 
         }
     }
